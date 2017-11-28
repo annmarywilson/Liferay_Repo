@@ -21,26 +21,21 @@ import java.io.ObjectOutput;
 public class EmployeeCacheModel implements CacheModel<Employee>, Externalizable {
     public long employeeId;
     public long groupId;
-    public long companyId;
-    public long userId;
     public String employeeName;
     public String employeeDesignation;
     public String address;
     public String email;
     public String phoneNumber;
+    public Long fileEntryId;
 
     @Override
     public String toString() {
-        StringBundler sb = new StringBundler(19);
+        StringBundler sb = new StringBundler(17);
 
         sb.append("{employeeId=");
         sb.append(employeeId);
         sb.append(", groupId=");
         sb.append(groupId);
-        sb.append(", companyId=");
-        sb.append(companyId);
-        sb.append(", userId=");
-        sb.append(userId);
         sb.append(", employeeName=");
         sb.append(employeeName);
         sb.append(", employeeDesignation=");
@@ -51,6 +46,8 @@ public class EmployeeCacheModel implements CacheModel<Employee>, Externalizable 
         sb.append(email);
         sb.append(", phoneNumber=");
         sb.append(phoneNumber);
+        sb.append(", fileEntryId=");
+        sb.append(fileEntryId);
         sb.append("}");
 
         return sb.toString();
@@ -62,8 +59,6 @@ public class EmployeeCacheModel implements CacheModel<Employee>, Externalizable 
 
         employeeImpl.setEmployeeId(employeeId);
         employeeImpl.setGroupId(groupId);
-        employeeImpl.setCompanyId(companyId);
-        employeeImpl.setUserId(userId);
 
         if (employeeName == null) {
             employeeImpl.setEmployeeName(StringPool.BLANK);
@@ -95,6 +90,8 @@ public class EmployeeCacheModel implements CacheModel<Employee>, Externalizable 
             employeeImpl.setPhoneNumber(phoneNumber);
         }
 
+        employeeImpl.setFileEntryId(fileEntryId);
+
         employeeImpl.resetOriginalValues();
 
         return employeeImpl;
@@ -104,13 +101,12 @@ public class EmployeeCacheModel implements CacheModel<Employee>, Externalizable 
     public void readExternal(ObjectInput objectInput) throws IOException {
         employeeId = objectInput.readLong();
         groupId = objectInput.readLong();
-        companyId = objectInput.readLong();
-        userId = objectInput.readLong();
         employeeName = objectInput.readUTF();
         employeeDesignation = objectInput.readUTF();
         address = objectInput.readUTF();
         email = objectInput.readUTF();
         phoneNumber = objectInput.readUTF();
+        fileEntryId = objectInput.readLong();
     }
 
     @Override
@@ -118,8 +114,6 @@ public class EmployeeCacheModel implements CacheModel<Employee>, Externalizable 
         throws IOException {
         objectOutput.writeLong(employeeId);
         objectOutput.writeLong(groupId);
-        objectOutput.writeLong(companyId);
-        objectOutput.writeLong(userId);
 
         if (employeeName == null) {
             objectOutput.writeUTF(StringPool.BLANK);
@@ -150,5 +144,7 @@ public class EmployeeCacheModel implements CacheModel<Employee>, Externalizable 
         } else {
             objectOutput.writeUTF(phoneNumber);
         }
+
+        objectOutput.writeLong(fileEntryId);
     }
 }

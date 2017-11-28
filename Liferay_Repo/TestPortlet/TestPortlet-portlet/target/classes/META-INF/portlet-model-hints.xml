@@ -4,12 +4,11 @@
 	<model name="net.opentrends.training.service.model.Employee">
 		<field name="employeeId" type="long" />
 		<field name="groupId" type="long" />
-		<field name="companyId" type="long" />
-		<field name="userId" type="long" />
 		<field name="employeeName" type="String" />
 		<field name="employeeDesignation" type="String" />
 		<field name="address" type="String" />
 		<field name="email" type="String" />
 		<field name="phoneNumber" type="String" />
+		<field name="fileEntryId" type="Long" />
 	</model>
 </model-hints>

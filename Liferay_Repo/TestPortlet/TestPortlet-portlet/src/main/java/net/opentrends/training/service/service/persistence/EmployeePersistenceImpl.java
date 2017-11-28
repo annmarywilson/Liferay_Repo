@@ -814,13 +814,12 @@ public class EmployeePersistenceImpl extends BasePersistenceImpl<Employee>
 
         employeeImpl.setEmployeeId(employee.getEmployeeId());
         employeeImpl.setGroupId(employee.getGroupId());
-        employeeImpl.setCompanyId(employee.getCompanyId());
-        employeeImpl.setUserId(employee.getUserId());
         employeeImpl.setEmployeeName(employee.getEmployeeName());
         employeeImpl.setEmployeeDesignation(employee.getEmployeeDesignation());
         employeeImpl.setAddress(employee.getAddress());
         employeeImpl.setEmail(employee.getEmail());
         employeeImpl.setPhoneNumber(employee.getPhoneNumber());
+        employeeImpl.setFileEntryId(employee.getFileEntryId());
 
         return employeeImpl;
     }

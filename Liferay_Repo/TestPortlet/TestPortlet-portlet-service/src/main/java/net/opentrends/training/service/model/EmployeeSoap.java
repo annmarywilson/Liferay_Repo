@@ -15,13 +15,12 @@ import java.util.List;
 public class EmployeeSoap implements Serializable {
     private long _employeeId;
     private long _groupId;
-    private long _companyId;
-    private long _userId;
     private String _employeeName;
     private String _employeeDesignation;
     private String _address;
     private String _email;
     private String _phoneNumber;
+    private Long _fileEntryId;
 
     public EmployeeSoap() {
     }
@@ -31,13 +30,12 @@ public class EmployeeSoap implements Serializable {
 
         soapModel.setEmployeeId(model.getEmployeeId());
         soapModel.setGroupId(model.getGroupId());
-        soapModel.setCompanyId(model.getCompanyId());
-        soapModel.setUserId(model.getUserId());
         soapModel.setEmployeeName(model.getEmployeeName());
         soapModel.setEmployeeDesignation(model.getEmployeeDesignation());
         soapModel.setAddress(model.getAddress());
         soapModel.setEmail(model.getEmail());
         soapModel.setPhoneNumber(model.getPhoneNumber());
+        soapModel.setFileEntryId(model.getFileEntryId());
 
         return soapModel;
     }
@@ -102,22 +100,6 @@ public class EmployeeSoap implements Serializable {
         _groupId = groupId;
     }
 
-    public long getCompanyId() {
-        return _companyId;
-    }
-
-    public void setCompanyId(long companyId) {
-        _companyId = companyId;
-    }
-
-    public long getUserId() {
-        return _userId;
-    }
-
-    public void setUserId(long userId) {
-        _userId = userId;
-    }
-
     public String getEmployeeName() {
         return _employeeName;
     }
@@ -156,5 +138,13 @@ public class EmployeeSoap implements Serializable {
 
     public void setPhoneNumber(String phoneNumber) {
         _phoneNumber = phoneNumber;
+    }
+
+    public Long getFileEntryId() {
+        return _fileEntryId;
+    }
+
+    public void setFileEntryId(Long fileEntryId) {
+        _fileEntryId = fileEntryId;
     }
 }

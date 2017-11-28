@@ -1,7 +1,6 @@
 package net.opentrends.training.service.model.impl;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
@@ -10,7 +9,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
 import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.util.PortalUtil;
 
 import com.liferay.portlet.expando.model.ExpandoBridge;
 import com.liferay.portlet.expando.util.ExpandoBridgeFactoryUtil;
@@ -53,15 +51,14 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
     public static final Object[][] TABLE_COLUMNS = {
             { "employeeId", Types.BIGINT },
             { "groupId", Types.BIGINT },
-            { "companyId", Types.BIGINT },
-            { "userId", Types.BIGINT },
             { "employeeName", Types.VARCHAR },
             { "employeeDesignation", Types.VARCHAR },
             { "address", Types.VARCHAR },
             { "email", Types.VARCHAR },
-            { "phoneNumber", Types.VARCHAR }
+            { "phoneNumber", Types.VARCHAR },
+            { "fileEntryId", Types.BIGINT }
         };
-    public static final String TABLE_SQL_CREATE = "create table TestPortlet_Employee (employeeId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,employeeName VARCHAR(75) null,employeeDesignation VARCHAR(75) null,address VARCHAR(75) null,email VARCHAR(75) null,phoneNumber VARCHAR(75) null)";
+    public static final String TABLE_SQL_CREATE = "create table TestPortlet_Employee (employeeId LONG not null primary key,groupId LONG,employeeName VARCHAR(75) null,employeeDesignation VARCHAR(75) null,address VARCHAR(75) null,email VARCHAR(75) null,phoneNumber VARCHAR(75) null,fileEntryId LONG)";
     public static final String TABLE_SQL_DROP = "drop table TestPortlet_Employee";
     public static final String ORDER_BY_JPQL = " ORDER BY employee.employeeId ASC";
     public static final String ORDER_BY_SQL = " ORDER BY TestPortlet_Employee.employeeId ASC";
@@ -89,14 +86,12 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
     private long _groupId;
     private long _originalGroupId;
     private boolean _setOriginalGroupId;
-    private long _companyId;
-    private long _userId;
-    private String _userUuid;
     private String _employeeName;
     private String _employeeDesignation;
     private String _address;
     private String _email;
     private String _phoneNumber;
+    private Long _fileEntryId;
     private long _columnBitmask;
     private Employee _escapedModel;
 
@@ -118,13 +113,12 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
 
         model.setEmployeeId(soapModel.getEmployeeId());
         model.setGroupId(soapModel.getGroupId());
-        model.setCompanyId(soapModel.getCompanyId());
-        model.setUserId(soapModel.getUserId());
         model.setEmployeeName(soapModel.getEmployeeName());
         model.setEmployeeDesignation(soapModel.getEmployeeDesignation());
         model.setAddress(soapModel.getAddress());
         model.setEmail(soapModel.getEmail());
         model.setPhoneNumber(soapModel.getPhoneNumber());
+        model.setFileEntryId(soapModel.getFileEntryId());
 
         return model;
     }
@@ -185,13 +179,12 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
 
         attributes.put("employeeId", getEmployeeId());
         attributes.put("groupId", getGroupId());
-        attributes.put("companyId", getCompanyId());
-        attributes.put("userId", getUserId());
         attributes.put("employeeName", getEmployeeName());
         attributes.put("employeeDesignation", getEmployeeDesignation());
         attributes.put("address", getAddress());
         attributes.put("email", getEmail());
         attributes.put("phoneNumber", getPhoneNumber());
+        attributes.put("fileEntryId", getFileEntryId());
 
         return attributes;
     }
@@ -208,18 +201,6 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
 
         if (groupId != null) {
             setGroupId(groupId);
-        }
-
-        Long companyId = (Long) attributes.get("companyId");
-
-        if (companyId != null) {
-            setCompanyId(companyId);
-        }
-
-        Long userId = (Long) attributes.get("userId");
-
-        if (userId != null) {
-            setUserId(userId);
         }
 
         String employeeName = (String) attributes.get("employeeName");
@@ -251,6 +232,12 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
 
         if (phoneNumber != null) {
             setPhoneNumber(phoneNumber);
+        }
+
+        Long fileEntryId = (Long) attributes.get("fileEntryId");
+
+        if (fileEntryId != null) {
+            setFileEntryId(fileEntryId);
         }
     }
 
@@ -286,38 +273,6 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
 
     public long getOriginalGroupId() {
         return _originalGroupId;
-    }
-
-    @JSON
-    @Override
-    public long getCompanyId() {
-        return _companyId;
-    }
-
-    @Override
-    public void setCompanyId(long companyId) {
-        _companyId = companyId;
-    }
-
-    @JSON
-    @Override
-    public long getUserId() {
-        return _userId;
-    }
-
-    @Override
-    public void setUserId(long userId) {
-        _userId = userId;
-    }
-
-    @Override
-    public String getUserUuid() throws SystemException {
-        return PortalUtil.getUserValue(getUserId(), "uuid", _userUuid);
-    }
-
-    @Override
-    public void setUserUuid(String userUuid) {
-        _userUuid = userUuid;
     }
 
     @JSON
@@ -395,13 +350,24 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
         _phoneNumber = phoneNumber;
     }
 
+    @JSON
+    @Override
+    public Long getFileEntryId() {
+        return _fileEntryId;
+    }
+
+    @Override
+    public void setFileEntryId(Long fileEntryId) {
+        _fileEntryId = fileEntryId;
+    }
+
     public long getColumnBitmask() {
         return _columnBitmask;
     }
 
     @Override
     public ExpandoBridge getExpandoBridge() {
-        return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
+        return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
             Employee.class.getName(), getPrimaryKey());
     }
 
@@ -428,13 +394,12 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
 
         employeeImpl.setEmployeeId(getEmployeeId());
         employeeImpl.setGroupId(getGroupId());
-        employeeImpl.setCompanyId(getCompanyId());
-        employeeImpl.setUserId(getUserId());
         employeeImpl.setEmployeeName(getEmployeeName());
         employeeImpl.setEmployeeDesignation(getEmployeeDesignation());
         employeeImpl.setAddress(getAddress());
         employeeImpl.setEmail(getEmail());
         employeeImpl.setPhoneNumber(getPhoneNumber());
+        employeeImpl.setFileEntryId(getFileEntryId());
 
         employeeImpl.resetOriginalValues();
 
@@ -499,10 +464,6 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
 
         employeeCacheModel.groupId = getGroupId();
 
-        employeeCacheModel.companyId = getCompanyId();
-
-        employeeCacheModel.userId = getUserId();
-
         employeeCacheModel.employeeName = getEmployeeName();
 
         String employeeName = employeeCacheModel.employeeName;
@@ -544,21 +505,19 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
             employeeCacheModel.phoneNumber = null;
         }
 
+        employeeCacheModel.fileEntryId = getFileEntryId();
+
         return employeeCacheModel;
     }
 
     @Override
     public String toString() {
-        StringBundler sb = new StringBundler(19);
+        StringBundler sb = new StringBundler(17);
 
         sb.append("{employeeId=");
         sb.append(getEmployeeId());
         sb.append(", groupId=");
         sb.append(getGroupId());
-        sb.append(", companyId=");
-        sb.append(getCompanyId());
-        sb.append(", userId=");
-        sb.append(getUserId());
         sb.append(", employeeName=");
         sb.append(getEmployeeName());
         sb.append(", employeeDesignation=");
@@ -569,6 +528,8 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
         sb.append(getEmail());
         sb.append(", phoneNumber=");
         sb.append(getPhoneNumber());
+        sb.append(", fileEntryId=");
+        sb.append(getFileEntryId());
         sb.append("}");
 
         return sb.toString();
@@ -576,7 +537,7 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
 
     @Override
     public String toXmlString() {
-        StringBundler sb = new StringBundler(31);
+        StringBundler sb = new StringBundler(28);
 
         sb.append("<model><model-name>");
         sb.append("net.opentrends.training.service.model.Employee");
@@ -589,14 +550,6 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
         sb.append(
             "<column><column-name>groupId</column-name><column-value><![CDATA[");
         sb.append(getGroupId());
-        sb.append("]]></column-value></column>");
-        sb.append(
-            "<column><column-name>companyId</column-name><column-value><![CDATA[");
-        sb.append(getCompanyId());
-        sb.append("]]></column-value></column>");
-        sb.append(
-            "<column><column-name>userId</column-name><column-value><![CDATA[");
-        sb.append(getUserId());
         sb.append("]]></column-value></column>");
         sb.append(
             "<column><column-name>employeeName</column-name><column-value><![CDATA[");
@@ -617,6 +570,10 @@ public class EmployeeModelImpl extends BaseModelImpl<Employee>
         sb.append(
             "<column><column-name>phoneNumber</column-name><column-value><![CDATA[");
         sb.append(getPhoneNumber());
+        sb.append("]]></column-value></column>");
+        sb.append(
+            "<column><column-name>fileEntryId</column-name><column-value><![CDATA[");
+        sb.append(getFileEntryId());
         sb.append("]]></column-value></column>");
 
         sb.append("</model>");

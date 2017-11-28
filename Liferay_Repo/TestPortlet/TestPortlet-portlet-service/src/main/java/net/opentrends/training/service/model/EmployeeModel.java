@@ -1,7 +1,6 @@
 package net.opentrends.training.service.model;
 
 import com.liferay.portal.kernel.bean.AutoEscape;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.service.ServiceContext;
@@ -71,49 +70,6 @@ public interface EmployeeModel extends BaseModel<Employee> {
      * @param groupId the group ID of this employee
      */
     public void setGroupId(long groupId);
-
-    /**
-     * Returns the company ID of this employee.
-     *
-     * @return the company ID of this employee
-     */
-    public long getCompanyId();
-
-    /**
-     * Sets the company ID of this employee.
-     *
-     * @param companyId the company ID of this employee
-     */
-    public void setCompanyId(long companyId);
-
-    /**
-     * Returns the user ID of this employee.
-     *
-     * @return the user ID of this employee
-     */
-    public long getUserId();
-
-    /**
-     * Sets the user ID of this employee.
-     *
-     * @param userId the user ID of this employee
-     */
-    public void setUserId(long userId);
-
-    /**
-     * Returns the user uuid of this employee.
-     *
-     * @return the user uuid of this employee
-     * @throws SystemException if a system exception occurred
-     */
-    public String getUserUuid() throws SystemException;
-
-    /**
-     * Sets the user uuid of this employee.
-     *
-     * @param userUuid the user uuid of this employee
-     */
-    public void setUserUuid(String userUuid);
 
     /**
      * Returns the employee name of this employee.
@@ -189,6 +145,20 @@ public interface EmployeeModel extends BaseModel<Employee> {
      * @param phoneNumber the phone number of this employee
      */
     public void setPhoneNumber(String phoneNumber);
+
+    /**
+     * Returns the file entry ID of this employee.
+     *
+     * @return the file entry ID of this employee
+     */
+    public Long getFileEntryId();
+
+    /**
+     * Sets the file entry ID of this employee.
+     *
+     * @param fileEntryId the file entry ID of this employee
+     */
+    public void setFileEntryId(Long fileEntryId);
 
     @Override
     public boolean isNew();

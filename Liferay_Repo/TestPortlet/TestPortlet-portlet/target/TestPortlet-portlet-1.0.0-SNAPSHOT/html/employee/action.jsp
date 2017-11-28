@@ -17,9 +17,9 @@
 	<!-- Updating edited datas -->
 	<liferay-ui:icon image="edit" message="Edit"
 		url="<%=editURL.toString()%>" />
+	<!-- Delete settings -->
+	<portlet:actionURL name="deleteEmployee" var="deleteURL">
+		<portlet:param name="deleteKey" value="<%=primaryKey%>" />
+	</portlet:actionURL>
+	<liferay-ui:icon-delete url="<%=deleteURL.toString()%>" />
 </liferay-ui:icon-menu>
-<!-- Delete settings -->
-<portlet:actionURL name="deleteEmployee" var="deleteURL">
-	<portlet:param name="deleteKey" value="<%=primaryKey%>" />
-</portlet:actionURL>
-<liferay-ui:icon-delete url="<%=deleteURL.toString()%>" />

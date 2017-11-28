@@ -38,13 +38,12 @@ public class EmployeeWrapper implements Employee, ModelWrapper<Employee> {
 
         attributes.put("employeeId", getEmployeeId());
         attributes.put("groupId", getGroupId());
-        attributes.put("companyId", getCompanyId());
-        attributes.put("userId", getUserId());
         attributes.put("employeeName", getEmployeeName());
         attributes.put("employeeDesignation", getEmployeeDesignation());
         attributes.put("address", getAddress());
         attributes.put("email", getEmail());
         attributes.put("phoneNumber", getPhoneNumber());
+        attributes.put("fileEntryId", getFileEntryId());
 
         return attributes;
     }
@@ -61,18 +60,6 @@ public class EmployeeWrapper implements Employee, ModelWrapper<Employee> {
 
         if (groupId != null) {
             setGroupId(groupId);
-        }
-
-        Long companyId = (Long) attributes.get("companyId");
-
-        if (companyId != null) {
-            setCompanyId(companyId);
-        }
-
-        Long userId = (Long) attributes.get("userId");
-
-        if (userId != null) {
-            setUserId(userId);
         }
 
         String employeeName = (String) attributes.get("employeeName");
@@ -104,6 +91,12 @@ public class EmployeeWrapper implements Employee, ModelWrapper<Employee> {
 
         if (phoneNumber != null) {
             setPhoneNumber(phoneNumber);
+        }
+
+        Long fileEntryId = (Long) attributes.get("fileEntryId");
+
+        if (fileEntryId != null) {
+            setFileEntryId(fileEntryId);
         }
     }
 
@@ -165,68 +158,6 @@ public class EmployeeWrapper implements Employee, ModelWrapper<Employee> {
     @Override
     public void setGroupId(long groupId) {
         _employee.setGroupId(groupId);
-    }
-
-    /**
-    * Returns the company ID of this employee.
-    *
-    * @return the company ID of this employee
-    */
-    @Override
-    public long getCompanyId() {
-        return _employee.getCompanyId();
-    }
-
-    /**
-    * Sets the company ID of this employee.
-    *
-    * @param companyId the company ID of this employee
-    */
-    @Override
-    public void setCompanyId(long companyId) {
-        _employee.setCompanyId(companyId);
-    }
-
-    /**
-    * Returns the user ID of this employee.
-    *
-    * @return the user ID of this employee
-    */
-    @Override
-    public long getUserId() {
-        return _employee.getUserId();
-    }
-
-    /**
-    * Sets the user ID of this employee.
-    *
-    * @param userId the user ID of this employee
-    */
-    @Override
-    public void setUserId(long userId) {
-        _employee.setUserId(userId);
-    }
-
-    /**
-    * Returns the user uuid of this employee.
-    *
-    * @return the user uuid of this employee
-    * @throws SystemException if a system exception occurred
-    */
-    @Override
-    public java.lang.String getUserUuid()
-        throws com.liferay.portal.kernel.exception.SystemException {
-        return _employee.getUserUuid();
-    }
-
-    /**
-    * Sets the user uuid of this employee.
-    *
-    * @param userUuid the user uuid of this employee
-    */
-    @Override
-    public void setUserUuid(java.lang.String userUuid) {
-        _employee.setUserUuid(userUuid);
     }
 
     /**
@@ -327,6 +258,26 @@ public class EmployeeWrapper implements Employee, ModelWrapper<Employee> {
     @Override
     public void setPhoneNumber(java.lang.String phoneNumber) {
         _employee.setPhoneNumber(phoneNumber);
+    }
+
+    /**
+    * Returns the file entry ID of this employee.
+    *
+    * @return the file entry ID of this employee
+    */
+    @Override
+    public java.lang.Long getFileEntryId() {
+        return _employee.getFileEntryId();
+    }
+
+    /**
+    * Sets the file entry ID of this employee.
+    *
+    * @param fileEntryId the file entry ID of this employee
+    */
+    @Override
+    public void setFileEntryId(java.lang.Long fileEntryId) {
+        _employee.setFileEntryId(fileEntryId);
     }
 
     @Override

@@ -11,17 +11,15 @@
 		<attributes>
 			<id name="employeeId" />
 			<basic name="groupId" />
-			<basic name="companyId" />
-			<basic name="userId" />
 			<basic name="employeeName" />
 			<basic name="employeeDesignation" />
 			<basic name="address" />
 			<basic name="email" />
 			<basic name="phoneNumber" />
+			<basic name="fileEntryId" />
 			<transient name="modelAttributes" />
 			<transient name="primaryKey" />
 			<transient name="primaryKeyObj" />
-			<transient name="userUuid" />
 		</attributes>
 	</mapped-superclass>
 	<entity class="net.opentrends.training.service.model.impl.EmployeeImpl" name="Employee">

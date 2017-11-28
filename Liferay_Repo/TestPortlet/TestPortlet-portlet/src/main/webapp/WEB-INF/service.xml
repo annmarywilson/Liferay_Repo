@@ -7,16 +7,16 @@
 		<column name="employeeId" type="long" primary="true" />
 
 		<column name="groupId" type="long" />
-		<column name="companyId" type="long" />
-		<column name="userId" type="long" />
 		<column name="employeeName" type="String" />
 		<column name="employeeDesignation" type="String" />
 		<column name="address" type="String" />
 		<column name="email" type="String" />
 		<column name="phoneNumber" type="String" />
+		<column name="fileEntryId" type="Long" />
 
 		<finder return-type="Collection" name="siteId">
 			<finder-column name="groupId" />
 		</finder>
 	</entity>
+
 </service-builder>

@@ -6,7 +6,6 @@ import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.impl.BaseModelImpl;
-import com.liferay.portal.util.PortalUtil;
 
 import net.opentrends.training.service.service.ClpSerializer;
 import net.opentrends.training.service.service.EmployeeLocalServiceUtil;
@@ -22,14 +21,12 @@ import java.util.Map;
 public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
     private long _employeeId;
     private long _groupId;
-    private long _companyId;
-    private long _userId;
-    private String _userUuid;
     private String _employeeName;
     private String _employeeDesignation;
     private String _address;
     private String _email;
     private String _phoneNumber;
+    private Long _fileEntryId;
     private BaseModel<?> _employeeRemoteModel;
     private Class<?> _clpSerializerClass = net.opentrends.training.service.service.ClpSerializer.class;
 
@@ -72,13 +69,12 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
 
         attributes.put("employeeId", getEmployeeId());
         attributes.put("groupId", getGroupId());
-        attributes.put("companyId", getCompanyId());
-        attributes.put("userId", getUserId());
         attributes.put("employeeName", getEmployeeName());
         attributes.put("employeeDesignation", getEmployeeDesignation());
         attributes.put("address", getAddress());
         attributes.put("email", getEmail());
         attributes.put("phoneNumber", getPhoneNumber());
+        attributes.put("fileEntryId", getFileEntryId());
 
         return attributes;
     }
@@ -95,18 +91,6 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
 
         if (groupId != null) {
             setGroupId(groupId);
-        }
-
-        Long companyId = (Long) attributes.get("companyId");
-
-        if (companyId != null) {
-            setCompanyId(companyId);
-        }
-
-        Long userId = (Long) attributes.get("userId");
-
-        if (userId != null) {
-            setUserId(userId);
         }
 
         String employeeName = (String) attributes.get("employeeName");
@@ -138,6 +122,12 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
 
         if (phoneNumber != null) {
             setPhoneNumber(phoneNumber);
+        }
+
+        Long fileEntryId = (Long) attributes.get("fileEntryId");
+
+        if (fileEntryId != null) {
+            setFileEntryId(fileEntryId);
         }
     }
 
@@ -183,60 +173,6 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
                 throw new UnsupportedOperationException(e);
             }
         }
-    }
-
-    @Override
-    public long getCompanyId() {
-        return _companyId;
-    }
-
-    @Override
-    public void setCompanyId(long companyId) {
-        _companyId = companyId;
-
-        if (_employeeRemoteModel != null) {
-            try {
-                Class<?> clazz = _employeeRemoteModel.getClass();
-
-                Method method = clazz.getMethod("setCompanyId", long.class);
-
-                method.invoke(_employeeRemoteModel, companyId);
-            } catch (Exception e) {
-                throw new UnsupportedOperationException(e);
-            }
-        }
-    }
-
-    @Override
-    public long getUserId() {
-        return _userId;
-    }
-
-    @Override
-    public void setUserId(long userId) {
-        _userId = userId;
-
-        if (_employeeRemoteModel != null) {
-            try {
-                Class<?> clazz = _employeeRemoteModel.getClass();
-
-                Method method = clazz.getMethod("setUserId", long.class);
-
-                method.invoke(_employeeRemoteModel, userId);
-            } catch (Exception e) {
-                throw new UnsupportedOperationException(e);
-            }
-        }
-    }
-
-    @Override
-    public String getUserUuid() throws SystemException {
-        return PortalUtil.getUserValue(getUserId(), "uuid", _userUuid);
-    }
-
-    @Override
-    public void setUserUuid(String userUuid) {
-        _userUuid = userUuid;
     }
 
     @Override
@@ -350,6 +286,28 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
         }
     }
 
+    @Override
+    public Long getFileEntryId() {
+        return _fileEntryId;
+    }
+
+    @Override
+    public void setFileEntryId(Long fileEntryId) {
+        _fileEntryId = fileEntryId;
+
+        if (_employeeRemoteModel != null) {
+            try {
+                Class<?> clazz = _employeeRemoteModel.getClass();
+
+                Method method = clazz.getMethod("setFileEntryId", Long.class);
+
+                method.invoke(_employeeRemoteModel, fileEntryId);
+            } catch (Exception e) {
+                throw new UnsupportedOperationException(e);
+            }
+        }
+    }
+
     public BaseModel<?> getEmployeeRemoteModel() {
         return _employeeRemoteModel;
     }
@@ -419,13 +377,12 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
 
         clone.setEmployeeId(getEmployeeId());
         clone.setGroupId(getGroupId());
-        clone.setCompanyId(getCompanyId());
-        clone.setUserId(getUserId());
         clone.setEmployeeName(getEmployeeName());
         clone.setEmployeeDesignation(getEmployeeDesignation());
         clone.setAddress(getAddress());
         clone.setEmail(getEmail());
         clone.setPhoneNumber(getPhoneNumber());
+        clone.setFileEntryId(getFileEntryId());
 
         return clone;
     }
@@ -475,16 +432,12 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
 
     @Override
     public String toString() {
-        StringBundler sb = new StringBundler(19);
+        StringBundler sb = new StringBundler(17);
 
         sb.append("{employeeId=");
         sb.append(getEmployeeId());
         sb.append(", groupId=");
         sb.append(getGroupId());
-        sb.append(", companyId=");
-        sb.append(getCompanyId());
-        sb.append(", userId=");
-        sb.append(getUserId());
         sb.append(", employeeName=");
         sb.append(getEmployeeName());
         sb.append(", employeeDesignation=");
@@ -495,6 +448,8 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
         sb.append(getEmail());
         sb.append(", phoneNumber=");
         sb.append(getPhoneNumber());
+        sb.append(", fileEntryId=");
+        sb.append(getFileEntryId());
         sb.append("}");
 
         return sb.toString();
@@ -502,7 +457,7 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
 
     @Override
     public String toXmlString() {
-        StringBundler sb = new StringBundler(31);
+        StringBundler sb = new StringBundler(28);
 
         sb.append("<model><model-name>");
         sb.append("net.opentrends.training.service.model.Employee");
@@ -515,14 +470,6 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
         sb.append(
             "<column><column-name>groupId</column-name><column-value><![CDATA[");
         sb.append(getGroupId());
-        sb.append("]]></column-value></column>");
-        sb.append(
-            "<column><column-name>companyId</column-name><column-value><![CDATA[");
-        sb.append(getCompanyId());
-        sb.append("]]></column-value></column>");
-        sb.append(
-            "<column><column-name>userId</column-name><column-value><![CDATA[");
-        sb.append(getUserId());
         sb.append("]]></column-value></column>");
         sb.append(
             "<column><column-name>employeeName</column-name><column-value><![CDATA[");
@@ -543,6 +490,10 @@ public class EmployeeClp extends BaseModelImpl<Employee> implements Employee {
         sb.append(
             "<column><column-name>phoneNumber</column-name><column-value><![CDATA[");
         sb.append(getPhoneNumber());
+        sb.append("]]></column-value></column>");
+        sb.append(
+            "<column><column-name>fileEntryId</column-name><column-value><![CDATA[");
+        sb.append(getFileEntryId());
         sb.append("]]></column-value></column>");
 
         sb.append("</model>");
