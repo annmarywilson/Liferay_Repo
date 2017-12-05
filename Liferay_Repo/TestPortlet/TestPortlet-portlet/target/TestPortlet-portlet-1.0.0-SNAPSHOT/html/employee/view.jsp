@@ -1,9 +1,7 @@
 <%@ include file="/html/init.jsp"%>
-
 <%
-	List<Employee> employeeList=EmployeeLocalServiceUtil.getEmployees(-1, -1);
+	List<Employee> employeeList = EmployeeLocalServiceUtil.getEmployees(-1, -1);
 %>
-<%=employeeList.size()%>
 <portlet:actionURL var="addEmployeeURL" name="addEmployee">
 </portlet:actionURL>
 <!-- Adding Employee List -->
@@ -55,14 +53,21 @@
 		</aui:layout>
 	</aui:fieldset>
 </aui:form>
+<%
+	long groupId = scopeGroupId;
+	String name = portletDisplay.getRootPortletId();
+	String primKey = portletDisplay.getResourcePK();
+	String actionId = "ADD_EMPLOYEE";//
+%>
+<!-- Adding permissions -->
 <liferay-ui:search-container var="searchContainer" delta="5"
 	emptyResultsMessage="no-users-were-found">
 	<liferay-ui:search-container-results>
 		<%
-			results = ListUtil.subList(employeeList, searchContainer.getStart(),searchContainer.getEnd());
-															total = employeeList.size();
-															pageContext.setAttribute("results", results);
-															pageContext.setAttribute("total", total);
+			results = ListUtil.subList(employeeList, searchContainer.getStart(), searchContainer.getEnd());
+					total = employeeList.size();
+					pageContext.setAttribute("results", results);
+					pageContext.setAttribute("total", total);
 		%>
 	</liferay-ui:search-container-results>
 	<liferay-ui:search-container-row
@@ -83,24 +88,21 @@
 			name="Name" value="<%=emp.getEmployeeName()%>">
 		</liferay-ui:search-container-column-text>
 		<liferay-ui:search-container-column-text>
-<%
-String imageUrl = StringPool.BLANK;
-if(emp.getFileEntryId()>0){
-FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(emp.getFileEntryId());
-FileVersion fileVersion = (FileVersion) fileEntry.getLatestFileVersion();
-ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-imageUrl = DLUtil.getPreviewURL(fileEntry, fileVersion, themeDisplay, StringPool.BLANK, false, true); 
-if(!imageUrl.isEmpty()){
-%>
-<img src="<%=imageUrl%>" alt="Employee Photo" height="50" width="50">
-<%
-
-}
-}
-%>
-
-</liferay-ui:search-container-column-text>
-		
+			<%
+// 				String imageUrl = StringPool.BLANK;
+							if (emp.getFileEntryId() > 0) {
+								FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(emp.getFileEntryId());
+								if (themeDisplay.isSignedIn()) {
+									String imageUrl = themeDisplay.getPortalURL() + themeDisplay.getPathContext() + "/documents/" + themeDisplay.getScopeGroupId() + "/" + fileEntry.getFolderId() +  "/" +fileEntry.getTitle();
+									if (!imageUrl.isEmpty()) {
+			%>
+			<img src="<%=imageUrl%>" alt="Employee Photo" height="30" width="30">
+			<%
+				}
+								}
+							}
+			%>
+		</liferay-ui:search-container-column-text>
 		<liferay-ui:search-container-column-jsp
 			path="/html/employee/action.jsp" align="right" />
 		<!-- creating button.jsp code -->

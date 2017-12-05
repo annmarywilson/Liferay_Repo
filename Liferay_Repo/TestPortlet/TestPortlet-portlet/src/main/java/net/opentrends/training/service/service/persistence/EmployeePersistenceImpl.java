@@ -7,6 +7,7 @@ import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
@@ -22,6 +23,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnmodifiableList;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
+import com.liferay.portal.security.permission.InlineSQLHelperUtil;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import net.opentrends.training.service.NoSuchEmployeeException;
@@ -93,7 +95,17 @@ public class EmployeePersistenceImpl extends BasePersistenceImpl<Employee>
     private static final String _SQL_SELECT_EMPLOYEE_WHERE = "SELECT employee FROM Employee employee WHERE ";
     private static final String _SQL_COUNT_EMPLOYEE = "SELECT COUNT(employee) FROM Employee employee";
     private static final String _SQL_COUNT_EMPLOYEE_WHERE = "SELECT COUNT(employee) FROM Employee employee WHERE ";
+    private static final String _FILTER_ENTITY_TABLE_FILTER_PK_COLUMN = "employee.employeeId";
+    private static final String _FILTER_SQL_SELECT_EMPLOYEE_WHERE = "SELECT DISTINCT {employee.*} FROM TestPortlet_Employee employee WHERE ";
+    private static final String _FILTER_SQL_SELECT_EMPLOYEE_NO_INLINE_DISTINCT_WHERE_1 =
+        "SELECT {TestPortlet_Employee.*} FROM (SELECT DISTINCT employee.employeeId FROM TestPortlet_Employee employee WHERE ";
+    private static final String _FILTER_SQL_SELECT_EMPLOYEE_NO_INLINE_DISTINCT_WHERE_2 =
+        ") TEMP_TABLE INNER JOIN TestPortlet_Employee ON TEMP_TABLE.employeeId = TestPortlet_Employee.employeeId";
+    private static final String _FILTER_SQL_COUNT_EMPLOYEE_WHERE = "SELECT COUNT(DISTINCT employee.employeeId) AS COUNT_VALUE FROM TestPortlet_Employee employee WHERE ";
+    private static final String _FILTER_ENTITY_ALIAS = "employee";
+    private static final String _FILTER_ENTITY_TABLE = "TestPortlet_Employee";
     private static final String _ORDER_BY_ENTITY_ALIAS = "employee.";
+    private static final String _ORDER_BY_ENTITY_TABLE = "TestPortlet_Employee.";
     private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No Employee exists with the primary key ";
     private static final String _NO_SUCH_ENTITY_WITH_KEY = "No Employee exists with the key {";
     private static final boolean _HIBERNATE_CACHE_USE_SECOND_LEVEL_CACHE = GetterUtil.getBoolean(PropsUtil.get(
@@ -504,6 +516,296 @@ public class EmployeePersistenceImpl extends BasePersistenceImpl<Employee>
     }
 
     /**
+     * Returns all the employees that the user has permission to view where groupId = &#63;.
+     *
+     * @param groupId the group ID
+     * @return the matching employees that the user has permission to view
+     * @throws SystemException if a system exception occurred
+     */
+    @Override
+    public List<Employee> filterFindBysiteId(long groupId)
+        throws SystemException {
+        return filterFindBysiteId(groupId, QueryUtil.ALL_POS,
+            QueryUtil.ALL_POS, null);
+    }
+
+    /**
+     * Returns a range of all the employees that the user has permission to view where groupId = &#63;.
+     *
+     * <p>
+     * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link net.opentrends.training.service.model.impl.EmployeeModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+     * </p>
+     *
+     * @param groupId the group ID
+     * @param start the lower bound of the range of employees
+     * @param end the upper bound of the range of employees (not inclusive)
+     * @return the range of matching employees that the user has permission to view
+     * @throws SystemException if a system exception occurred
+     */
+    @Override
+    public List<Employee> filterFindBysiteId(long groupId, int start, int end)
+        throws SystemException {
+        return filterFindBysiteId(groupId, start, end, null);
+    }
+
+    /**
+     * Returns an ordered range of all the employees that the user has permissions to view where groupId = &#63;.
+     *
+     * <p>
+     * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set. If <code>orderByComparator</code> is specified, then the query will include the given ORDER BY logic. If <code>orderByComparator</code> is absent and pagination is required (<code>start</code> and <code>end</code> are not {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS}), then the query will include the default ORDER BY logic from {@link net.opentrends.training.service.model.impl.EmployeeModelImpl}. If both <code>orderByComparator</code> and pagination are absent, for performance reasons, the query will not have an ORDER BY clause and the returned result set will be sorted on by the primary key in an ascending order.
+     * </p>
+     *
+     * @param groupId the group ID
+     * @param start the lower bound of the range of employees
+     * @param end the upper bound of the range of employees (not inclusive)
+     * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
+     * @return the ordered range of matching employees that the user has permission to view
+     * @throws SystemException if a system exception occurred
+     */
+    @Override
+    public List<Employee> filterFindBysiteId(long groupId, int start, int end,
+        OrderByComparator orderByComparator) throws SystemException {
+        if (!InlineSQLHelperUtil.isEnabled(groupId)) {
+            return findBysiteId(groupId, start, end, orderByComparator);
+        }
+
+        StringBundler query = null;
+
+        if (orderByComparator != null) {
+            query = new StringBundler(3 +
+                    (orderByComparator.getOrderByFields().length * 3));
+        } else {
+            query = new StringBundler(3);
+        }
+
+        if (getDB().isSupportsInlineDistinct()) {
+            query.append(_FILTER_SQL_SELECT_EMPLOYEE_WHERE);
+        } else {
+            query.append(_FILTER_SQL_SELECT_EMPLOYEE_NO_INLINE_DISTINCT_WHERE_1);
+        }
+
+        query.append(_FINDER_COLUMN_SITEID_GROUPID_2);
+
+        if (!getDB().isSupportsInlineDistinct()) {
+            query.append(_FILTER_SQL_SELECT_EMPLOYEE_NO_INLINE_DISTINCT_WHERE_2);
+        }
+
+        if (orderByComparator != null) {
+            if (getDB().isSupportsInlineDistinct()) {
+                appendOrderByComparator(query, _ORDER_BY_ENTITY_ALIAS,
+                    orderByComparator, true);
+            } else {
+                appendOrderByComparator(query, _ORDER_BY_ENTITY_TABLE,
+                    orderByComparator, true);
+            }
+        } else {
+            if (getDB().isSupportsInlineDistinct()) {
+                query.append(EmployeeModelImpl.ORDER_BY_JPQL);
+            } else {
+                query.append(EmployeeModelImpl.ORDER_BY_SQL);
+            }
+        }
+
+        String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+                Employee.class.getName(),
+                _FILTER_ENTITY_TABLE_FILTER_PK_COLUMN, groupId);
+
+        Session session = null;
+
+        try {
+            session = openSession();
+
+            SQLQuery q = session.createSQLQuery(sql);
+
+            if (getDB().isSupportsInlineDistinct()) {
+                q.addEntity(_FILTER_ENTITY_ALIAS, EmployeeImpl.class);
+            } else {
+                q.addEntity(_FILTER_ENTITY_TABLE, EmployeeImpl.class);
+            }
+
+            QueryPos qPos = QueryPos.getInstance(q);
+
+            qPos.add(groupId);
+
+            return (List<Employee>) QueryUtil.list(q, getDialect(), start, end);
+        } catch (Exception e) {
+            throw processException(e);
+        } finally {
+            closeSession(session);
+        }
+    }
+
+    /**
+     * Returns the employees before and after the current employee in the ordered set of employees that the user has permission to view where groupId = &#63;.
+     *
+     * @param employeeId the primary key of the current employee
+     * @param groupId the group ID
+     * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+     * @return the previous, current, and next employee
+     * @throws net.opentrends.training.service.NoSuchEmployeeException if a employee with the primary key could not be found
+     * @throws SystemException if a system exception occurred
+     */
+    @Override
+    public Employee[] filterFindBysiteId_PrevAndNext(long employeeId,
+        long groupId, OrderByComparator orderByComparator)
+        throws NoSuchEmployeeException, SystemException {
+        if (!InlineSQLHelperUtil.isEnabled(groupId)) {
+            return findBysiteId_PrevAndNext(employeeId, groupId,
+                orderByComparator);
+        }
+
+        Employee employee = findByPrimaryKey(employeeId);
+
+        Session session = null;
+
+        try {
+            session = openSession();
+
+            Employee[] array = new EmployeeImpl[3];
+
+            array[0] = filterGetBysiteId_PrevAndNext(session, employee,
+                    groupId, orderByComparator, true);
+
+            array[1] = employee;
+
+            array[2] = filterGetBysiteId_PrevAndNext(session, employee,
+                    groupId, orderByComparator, false);
+
+            return array;
+        } catch (Exception e) {
+            throw processException(e);
+        } finally {
+            closeSession(session);
+        }
+    }
+
+    protected Employee filterGetBysiteId_PrevAndNext(Session session,
+        Employee employee, long groupId, OrderByComparator orderByComparator,
+        boolean previous) {
+        StringBundler query = null;
+
+        if (orderByComparator != null) {
+            query = new StringBundler(6 +
+                    (orderByComparator.getOrderByFields().length * 6));
+        } else {
+            query = new StringBundler(3);
+        }
+
+        if (getDB().isSupportsInlineDistinct()) {
+            query.append(_FILTER_SQL_SELECT_EMPLOYEE_WHERE);
+        } else {
+            query.append(_FILTER_SQL_SELECT_EMPLOYEE_NO_INLINE_DISTINCT_WHERE_1);
+        }
+
+        query.append(_FINDER_COLUMN_SITEID_GROUPID_2);
+
+        if (!getDB().isSupportsInlineDistinct()) {
+            query.append(_FILTER_SQL_SELECT_EMPLOYEE_NO_INLINE_DISTINCT_WHERE_2);
+        }
+
+        if (orderByComparator != null) {
+            String[] orderByConditionFields = orderByComparator.getOrderByConditionFields();
+
+            if (orderByConditionFields.length > 0) {
+                query.append(WHERE_AND);
+            }
+
+            for (int i = 0; i < orderByConditionFields.length; i++) {
+                if (getDB().isSupportsInlineDistinct()) {
+                    query.append(_ORDER_BY_ENTITY_ALIAS);
+                } else {
+                    query.append(_ORDER_BY_ENTITY_TABLE);
+                }
+
+                query.append(orderByConditionFields[i]);
+
+                if ((i + 1) < orderByConditionFields.length) {
+                    if (orderByComparator.isAscending() ^ previous) {
+                        query.append(WHERE_GREATER_THAN_HAS_NEXT);
+                    } else {
+                        query.append(WHERE_LESSER_THAN_HAS_NEXT);
+                    }
+                } else {
+                    if (orderByComparator.isAscending() ^ previous) {
+                        query.append(WHERE_GREATER_THAN);
+                    } else {
+                        query.append(WHERE_LESSER_THAN);
+                    }
+                }
+            }
+
+            query.append(ORDER_BY_CLAUSE);
+
+            String[] orderByFields = orderByComparator.getOrderByFields();
+
+            for (int i = 0; i < orderByFields.length; i++) {
+                if (getDB().isSupportsInlineDistinct()) {
+                    query.append(_ORDER_BY_ENTITY_ALIAS);
+                } else {
+                    query.append(_ORDER_BY_ENTITY_TABLE);
+                }
+
+                query.append(orderByFields[i]);
+
+                if ((i + 1) < orderByFields.length) {
+                    if (orderByComparator.isAscending() ^ previous) {
+                        query.append(ORDER_BY_ASC_HAS_NEXT);
+                    } else {
+                        query.append(ORDER_BY_DESC_HAS_NEXT);
+                    }
+                } else {
+                    if (orderByComparator.isAscending() ^ previous) {
+                        query.append(ORDER_BY_ASC);
+                    } else {
+                        query.append(ORDER_BY_DESC);
+                    }
+                }
+            }
+        } else {
+            if (getDB().isSupportsInlineDistinct()) {
+                query.append(EmployeeModelImpl.ORDER_BY_JPQL);
+            } else {
+                query.append(EmployeeModelImpl.ORDER_BY_SQL);
+            }
+        }
+
+        String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+                Employee.class.getName(),
+                _FILTER_ENTITY_TABLE_FILTER_PK_COLUMN, groupId);
+
+        SQLQuery q = session.createSQLQuery(sql);
+
+        q.setFirstResult(0);
+        q.setMaxResults(2);
+
+        if (getDB().isSupportsInlineDistinct()) {
+            q.addEntity(_FILTER_ENTITY_ALIAS, EmployeeImpl.class);
+        } else {
+            q.addEntity(_FILTER_ENTITY_TABLE, EmployeeImpl.class);
+        }
+
+        QueryPos qPos = QueryPos.getInstance(q);
+
+        qPos.add(groupId);
+
+        if (orderByComparator != null) {
+            Object[] values = orderByComparator.getOrderByConditionValues(employee);
+
+            for (Object value : values) {
+                qPos.add(value);
+            }
+        }
+
+        List<Employee> list = q.list();
+
+        if (list.size() == 2) {
+            return list.get(1);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Removes all the employees where groupId = &#63; from the database.
      *
      * @param groupId the group ID
@@ -566,6 +868,53 @@ public class EmployeePersistenceImpl extends BasePersistenceImpl<Employee>
         }
 
         return count.intValue();
+    }
+
+    /**
+     * Returns the number of employees that the user has permission to view where groupId = &#63;.
+     *
+     * @param groupId the group ID
+     * @return the number of matching employees that the user has permission to view
+     * @throws SystemException if a system exception occurred
+     */
+    @Override
+    public int filterCountBysiteId(long groupId) throws SystemException {
+        if (!InlineSQLHelperUtil.isEnabled(groupId)) {
+            return countBysiteId(groupId);
+        }
+
+        StringBundler query = new StringBundler(2);
+
+        query.append(_FILTER_SQL_COUNT_EMPLOYEE_WHERE);
+
+        query.append(_FINDER_COLUMN_SITEID_GROUPID_2);
+
+        String sql = InlineSQLHelperUtil.replacePermissionCheck(query.toString(),
+                Employee.class.getName(),
+                _FILTER_ENTITY_TABLE_FILTER_PK_COLUMN, groupId);
+
+        Session session = null;
+
+        try {
+            session = openSession();
+
+            SQLQuery q = session.createSQLQuery(sql);
+
+            q.addScalar(COUNT_COLUMN_NAME,
+                com.liferay.portal.kernel.dao.orm.Type.LONG);
+
+            QueryPos qPos = QueryPos.getInstance(q);
+
+            qPos.add(groupId);
+
+            Long count = (Long) q.uniqueResult();
+
+            return count.intValue();
+        } catch (Exception e) {
+            throw processException(e);
+        } finally {
+            closeSession(session);
+        }
     }
 
     /**

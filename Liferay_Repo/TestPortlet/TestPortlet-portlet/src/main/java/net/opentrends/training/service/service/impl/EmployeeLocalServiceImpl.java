@@ -1,5 +1,10 @@
 package net.opentrends.training.service.service.impl;
 
+import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
+
 import net.opentrends.training.service.service.base.EmployeeLocalServiceBaseImpl;
 
 /**
@@ -22,4 +27,10 @@ public class EmployeeLocalServiceImpl extends EmployeeLocalServiceBaseImpl {
      *
      * Never reference this interface directly. Always use {@link net.opentrends.training.service.service.EmployeeLocalServiceUtil} to access the employee local service.
      */
+	/*public String previewImageUrl(ThemeDisplay themedispaly,long fileEntryId){
+		String imageUrl = themeDisplay.getPortalURL() + themeDisplay.getPathContext() + "/documents/" + themeDisplay.getScopeGroupId() + "/" + FileEntry.getFolderId() +  "/" +fileEntry.getTitle();
+		FileVersion fileVersion=null;
+		return null;
+		
+	}*/
 }

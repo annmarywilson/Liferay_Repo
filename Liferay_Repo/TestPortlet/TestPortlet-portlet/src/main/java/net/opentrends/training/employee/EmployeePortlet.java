@@ -8,6 +8,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
 import net.opentrends.training.service.model.Employee;
+import net.opentrends.training.service.permission.EmployeePermission;
 import net.opentrends.training.service.service.EmployeeLocalServiceUtil;
 
 import com.liferay.counter.service.CounterLocalServiceUtil;
@@ -20,6 +21,8 @@ import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.model.ResourceConstants;
+import com.liferay.portal.service.ResourceLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -28,14 +31,13 @@ import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
+import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.util.bridges.mvc.MVCPortlet;
-
 public class EmployeePortlet extends MVCPortlet {
 
-	private static Log _log = LogFactoryUtil.getLog(EmployeePortlet.class
-			.getName());
+	private static Log _log = LogFactoryUtil.getLog(EmployeePortlet.class.getName());
 	private static long PARENT_FOLDER_ID = DLFolderConstants.DEFAULT_PARENT_FOLDER_ID;
 	String ROOT_FOLDER_NAME = "Employee_Photos";
 	String ROOT_FOLDER_DESCRIPTION = "checking file uploading status in db";
@@ -43,26 +45,29 @@ public class EmployeePortlet extends MVCPortlet {
 	// Adding employee in DB
 	public void addEmployee(ActionRequest request, ActionResponse response)
 			throws SystemException, IOException, PortalException {
-		long employeeId = CounterLocalServiceUtil.increment(Employee.class
-				.getName());
+		long employeeId = CounterLocalServiceUtil.increment(Employee.class.getName());
 		Employee employee = null;
 		employee = EmployeeLocalServiceUtil.createEmployee(employeeId);
 		employee.setEmployeeName(ParamUtil.getString(request, "employeeName"));
-		employee.setEmployeeDesignation(ParamUtil.getString(request,
-				"employeeDesignation"));
+		employee.setEmployeeDesignation(ParamUtil.getString(request, "employeeDesignation"));
 		employee.setAddress(ParamUtil.getString(request, "address"));
 		employee.setEmail(ParamUtil.getString(request, "email"));
 		employee.setPhoneNumber(ParamUtil.getString(request, "phoneNumber"));
 		/* Uploading employee documents */
-		ThemeDisplay themeDisplay = (ThemeDisplay) request
-				.getAttribute(WebKeys.THEME_DISPLAY);
+		ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+		// Checking permission for ADD_EMPLOYEE
+//		EmployeePermission.insertPermission(themeDisplay);
 		createFolder(request, themeDisplay);
 		long fileEntryId = fileUpload(employee, themeDisplay, request);
 		employee.setFileEntryId(fileEntryId);
+		// setting groupId
+		employee.setGroupId(themeDisplay.getScopeGroupId());
 		EmployeeLocalServiceUtil.addEmployee(employee);
+		ResourceLocalServiceUtil.addResources(themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId(),
+				themeDisplay.getUserId(), Employee.class.getName(), employeeId, false, true, true);
 	}
+	// -----------------------------------------------------------------------------
 
-	/* --------------------------------------------------------------------- */
 	// Downloading files
 
 	// Creating folder in document and media
@@ -72,10 +77,8 @@ public class EmployeePortlet extends MVCPortlet {
 		if (!folderExist) {
 			long repositoryId = themeDisplay.getScopeGroupId();
 			try {
-				ServiceContext serviceContext = ServiceContextFactory
-						.getInstance(DLFolder.class.getName(), request);
-				DLAppServiceUtil.addFolder(repositoryId, PARENT_FOLDER_ID,
-						ROOT_FOLDER_NAME, ROOT_FOLDER_DESCRIPTION,
+				ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFolder.class.getName(), request);
+				DLAppServiceUtil.addFolder(repositoryId, PARENT_FOLDER_ID, ROOT_FOLDER_NAME, ROOT_FOLDER_DESCRIPTION,
 						serviceContext);
 			} catch (PortalException e1) {
 				_log.error(e1.getMessage());
@@ -88,10 +91,8 @@ public class EmployeePortlet extends MVCPortlet {
 	public boolean isFolderExist(ThemeDisplay themeDisplay) {
 		boolean folderExist = false;
 		try {
-			DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(),
-					PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
+			DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
 			folderExist = true;
-			_log.error("Folder already exist");
 		} catch (Exception e) {
 			_log.error(e.getMessage());
 		}
@@ -101,20 +102,28 @@ public class EmployeePortlet extends MVCPortlet {
 	public Folder getFolder(ThemeDisplay themeDisplay) {
 		Folder folder = null;
 		try {
-			folder = DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(),
-					PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
+			folder = DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
 		} catch (Exception e) {
 			_log.error(e.getMessage());
 		}
 		return folder;
 	}
 
-	public long fileUpload(Employee emp, ThemeDisplay themeDisplay,
-			ActionRequest actionRequest) throws IOException {
-		UploadPortletRequest uploadPortletRequest = PortalUtil
-				.getUploadPortletRequest(actionRequest);
-		InputStream inputStream = uploadPortletRequest
-				.getFileAsStream("fileUpload");
+	// Get ScopeGroupId using service context
+	public Folder getFolderServiceContext(ServiceContext serviceContext) {
+		Folder folder = null;
+		try {
+			folder = DLAppServiceUtil.getFolder(serviceContext.getScopeGroupId(), PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
+		} catch (Exception e) {
+			_log.error(e.getMessage());
+		}
+		return folder;
+
+	}
+
+	public long fileUpload(Employee emp, ThemeDisplay themeDisplay, ActionRequest actionRequest) throws IOException {
+		UploadPortletRequest uploadPortletRequest = PortalUtil.getUploadPortletRequest(actionRequest);
+		InputStream inputStream = uploadPortletRequest.getFileAsStream("fileUpload");
 		long fileEntryId = 0;
 		if (inputStream != null) {
 			String fileName = uploadPortletRequest.getFileName("fileUpload");
@@ -126,12 +135,11 @@ public class EmployeePortlet extends MVCPortlet {
 			long repositoryId = themeDisplay.getScopeGroupId();
 			try {
 				Folder folder = getFolder(themeDisplay);
-				ServiceContext serviceContext = ServiceContextFactory
-						.getInstance(DLFileEntry.class.getName(), actionRequest);
-				FileEntry entry = DLAppServiceUtil.addFileEntry(repositoryId,
-						folder.getFolderId(), fileName, mimeType, title,
-						description, "", inputStream, file.length(),
-						serviceContext);
+				ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFileEntry.class.getName(),
+						actionRequest);
+				FileEntry entry = DLAppLocalServiceUtil.addFileEntry(serviceContext.getUserId(), repositoryId, folder.getFolderId(), fileName, mimeType, title, description, "", inputStream, file.length(), serviceContext);
+//				FileEntry entry = DLAppLocalServiceUtil.addFileEntry(repositoryId, folder.getFolderId(), fileEntryId, fileName, mimeType,
+//						title, description, "", inputStream, file.length(), serviceContext);
 				fileEntryId = entry.getFileEntryId();
 			} catch (DuplicateFileException e) {
 				_log.error(e.getMessage());
@@ -143,14 +151,11 @@ public class EmployeePortlet extends MVCPortlet {
 		}
 		return fileEntryId;
 	}
-	
-	public void updateFileUpload(Employee emp, long fileEntryId,
-			ThemeDisplay themeDisplay, ActionRequest request)
+
+	public void updateFileUpload(Employee emp, long fileEntryId, ThemeDisplay themeDisplay, ActionRequest request)
 			throws IOException {
-		UploadPortletRequest uploadPortletRequest = PortalUtil
-				.getUploadPortletRequest(request);
-		InputStream inputStream = uploadPortletRequest
-				.getFileAsStream("fileUpload");
+		UploadPortletRequest uploadPortletRequest = PortalUtil.getUploadPortletRequest(request);
+		InputStream inputStream = uploadPortletRequest.getFileAsStream("fileUpload");
 		if (inputStream != null) {
 			String fileName = uploadPortletRequest.getFileName("fileUpload");
 			File file = uploadPortletRequest.getFile("fileUpload");
@@ -158,11 +163,9 @@ public class EmployeePortlet extends MVCPortlet {
 			String title = emp.getEmployeeName() + "_" + emp.getEmployeeId();
 			String description = "Updated profilePic of employees";
 			try {
-				ServiceContext serviceContext = ServiceContextFactory
-						.getInstance(DLFileEntry.class.getName(), request);
-				FileEntry entry = DLAppServiceUtil.updateFileEntry(fileEntryId,
-						fileName, mimeType, title, description, "", true,
-						inputStream, file.length(), serviceContext);
+				ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFileEntry.class.getName(), request);
+				FileEntry entry = DLAppServiceUtil.updateFileEntry(fileEntryId, fileName, mimeType, title, description,
+						"", true, inputStream, file.length(), serviceContext);
 				fileEntryId = entry.getFileEntryId();
 			} catch (Exception e) {
 				_log.error(e.getMessage());
@@ -170,31 +173,28 @@ public class EmployeePortlet extends MVCPortlet {
 		}
 	}
 
-	/*---------------------------------------------------------------------*/
+	/*-----------------------------------------------------------------------------------------------------------------*/
 	// Edit employee from DB
-	public void editEmployee(ActionRequest request, ActionResponse response)
-			throws PortalException, SystemException {
+	public void editEmployee(ActionRequest request, ActionResponse response) throws PortalException, SystemException {
 		String strKey = request.getParameter("editKey");
 		long empId = Long.valueOf(strKey);
 		Employee emp = EmployeeLocalServiceUtil.getEmployee(empId);
 		request.setAttribute("editKey", emp);
 		response.setRenderParameter("mvcPath", "/html/employee/edit.jsp");
 	}
+
 	// Update employee in DB
-	public void updateEmployee(ActionRequest request, ActionResponse response)
-			throws SystemException, IOException {
-		Employee employee = EmployeeLocalServiceUtil.fetchEmployee(ParamUtil
-				.getInteger(request, "employeeId"));
-		employee.setEmployeeDesignation(ParamUtil.getString(request,
-				"employeeName"));
-		employee.setEmployeeDesignation(ParamUtil.getString(request,
-				"employeeDesignation"));
+	public void updateEmployee(ActionRequest request, ActionResponse response) throws SystemException, IOException {
+		Employee employee = EmployeeLocalServiceUtil.fetchEmployee(ParamUtil.getInteger(request, "employeeId"));
+		ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+		employee.setEmployeeDesignation(ParamUtil.getString(request, "employeeName"));
+		employee.setEmployeeDesignation(ParamUtil.getString(request, "employeeDesignation"));
 		employee.setAddress(ParamUtil.getString(request, "address"));
 		employee.setEmail(ParamUtil.getString(request, "email"));
 		employee.setPhoneNumber(ParamUtil.getString(request, "phoneNumber"));
+		// setting groupId
+		employee.setGroupId(themeDisplay.getScopeGroupId());
 		long fileEntryId = employee.getFileEntryId();
-		ThemeDisplay themeDisplay = (ThemeDisplay) request
-				.getAttribute(WebKeys.THEME_DISPLAY);
 		if (fileEntryId > 0) {
 			// updating files entered
 			updateFileUpload(employee, fileEntryId, themeDisplay, request);
@@ -209,15 +209,16 @@ public class EmployeePortlet extends MVCPortlet {
 	}
 
 	// Delete employee from DB
-	public void deleteEmployee(ActionRequest request, ActionResponse response)
-			throws SystemException, PortalException {
+	public void deleteEmployee(ActionRequest request, ActionResponse response) throws SystemException, PortalException {
 		String stringKey = request.getParameter("deleteKey");
 		long employeeId = Long.valueOf(stringKey);
 		Employee employee = EmployeeLocalServiceUtil.getEmployee(employeeId);
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFolder.class.getName(), request);
 		EmployeeLocalServiceUtil.deleteEmployee(employeeId);
+		ResourceLocalServiceUtil.deleteResource(serviceContext.getCompanyId(), Employee.class.getName(),
+				ResourceConstants.SCOPE_INDIVIDUAL, employee.getEmployeeId());
 		if (employee.getFileEntryId() > 0) {
-			DLFileEntryLocalServiceUtil.deleteDLFileEntry(employee
-					.getFileEntryId());
+			DLFileEntryLocalServiceUtil.deleteDLFileEntry(employee.getFileEntryId());
 		}
 		response.setRenderParameter("mvcPath", "/html/employee/view.jsp");
 	}

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<resource-action-mapping>
+	<portlet-resource>
+		<portlet-name>Employee</portlet-name>
+		<permissions>
+			<supports>
+				<action-key>ADD_EMPLOYEE</action-key>
+				<action-key>VIEW</action-key>
+				<action-key>CONFIGURATION</action-key>
+			</supports>
+			<community-defaults />
+			<site-member-defaults>
+				<action-key>VIEW</action-key>
+			</site-member-defaults>
+			<guest-defaults>
+				<action-key>VIEW</action-key>
+			</guest-defaults>
+			<guest-unsupported />
+		</permissions>
+	</portlet-resource>
+
+	<model-resource>
+		<model-name>net.opentrends.training.service.model</model-name>
+		<portlet-ref>
+			<portlet-name>Employee</portlet-name>
+		</portlet-ref>
+		<supports>
+			<action-key>ADD_EMPLOYEE</action-key>
+			<action-key>PERMISSIONS</action-key>
+			<action-key>EDIT</action-key>
+			<action-key>VIEW</action-key>
+		</supports>
+		<community-defaults>
+			<action-key>VIEW</action-key>
+		</community-defaults>
+		<guest-defaults>
+			<action-key>VIEW</action-key>
+		</guest-defaults>
+		<guest-unsupported>
+			<action-key>ADD_EMPLOYEE</action-key>
+		</guest-unsupported>
+	</model-resource>
+
+	<model-resource>
+		<model-name>net.opentrends.training.service.model.Employee
+		</model-name>
+		<portlet-ref>
+			<portlet-name>Employee</portlet-name>
+		</portlet-ref>
+		<permissions>
+			<supports>
+				<action-key>DELETE</action-key>
+				<action-key>PERMISSIONS</action-key>
+				<action-key>EDIT</action-key>
+				<action-key>VIEW</action-key>
+			</supports>
+			<site-member-defaults>
+				<action-key>VIEW</action-key>
+			</site-member-defaults>
+			<guest-defaults>
+				<action-key>VIEW</action-key>
+			</guest-defaults>
+			<guest-unsupported>
+				<action-key>DELETE</action-key>
+			</guest-unsupported>
+		</permissions>
+	</model-resource>
+</resource-action-mapping>
