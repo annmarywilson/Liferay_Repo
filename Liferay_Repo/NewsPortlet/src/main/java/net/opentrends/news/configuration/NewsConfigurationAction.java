@@ -14,16 +14,18 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 
 public class NewsConfigurationAction implements ConfigurationAction {
-
 	@Override
 	public void processAction(PortletConfig portletConfig, ActionRequest actionRequest, ActionResponse actionResponse)
 			throws Exception {
 		String portletResource = ParamUtil.getString(actionRequest, "portletResource");
         String portletName=(String) actionRequest.getAttribute(WebKeys.PORTLET_ID);
         
-        String structureKey=ParamUtil.getString(actionRequest, "structureKey");
+        String structureId=ParamUtil.getString(actionRequest, "structureId");
+        String templateId=ParamUtil.getString(actionRequest, "templateId");
         PortletPreferences preferences=PortletPreferencesFactoryUtil.getPortletSetup(actionRequest, portletResource);
-        preferences.setValue("structureKey", structureKey);
+        preferences.setValue("structureId", structureId);
+        preferences.setValue("templateId", templateId);
+        
         preferences.store();
         SessionMessages.add(actionRequest, portletName+".doConfigure");
         SessionMessages.add(actionRequest, "portlet-config-saved");
@@ -31,7 +33,9 @@ public class NewsConfigurationAction implements ConfigurationAction {
 	@Override
 	public String render(PortletConfig portletConfig, RenderRequest renderRequest, RenderResponse renderResponse)
 			throws Exception {
+		
 		return "/html/news/configuration.jsp";
+		
 	}
 
 }
