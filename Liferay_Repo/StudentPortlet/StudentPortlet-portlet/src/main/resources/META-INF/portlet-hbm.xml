@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false" auto-import="false">
+	<import class="net.opentrends.register.model.Address" />
+	<import class="net.opentrends.register.model.Student" />
+	<class name="net.opentrends.register.model.impl.AddressImpl" table="StudentPortlet_Address">
+		<cache usage="read-write" />
+		<id name="addressId" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="studentId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="parentAddress" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="parentState" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="parentDistrict" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="parentPin" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="parentPhone" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="parentMail" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+	<class name="net.opentrends.register.model.impl.StudentImpl" table="StudentPortlet_Student">
+		<cache usage="read-write" />
+		<id name="studentId" type="long">
+			<generator class="assigned" />
+		</id>
+		<property name="groupId" type="com.liferay.portal.dao.orm.hibernate.LongType" />
+		<property name="studentName" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="studentClass" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="studentEmail" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+		<property name="phoneNumber" type="com.liferay.portal.dao.orm.hibernate.StringType" />
+	</class>
+</hibernate-mapping>

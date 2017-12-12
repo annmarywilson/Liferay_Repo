@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd">
+	<persistence-unit-metadata>
+		<xml-mapping-metadata-complete/>
+		<persistence-unit-defaults>
+			<access>PROPERTY</access>
+		</persistence-unit-defaults>
+	</persistence-unit-metadata>
+	<mapped-superclass class="net.opentrends.register.model.impl.AddressModelImpl">
+		<attributes>
+			<id name="addressId" />
+			<basic name="studentId" />
+			<basic name="groupId" />
+			<basic name="parentAddress" />
+			<basic name="parentState" />
+			<basic name="parentDistrict" />
+			<basic name="parentPin" />
+			<basic name="parentPhone" />
+			<basic name="parentMail" />
+			<transient name="modelAttributes" />
+			<transient name="primaryKey" />
+			<transient name="primaryKeyObj" />
+		</attributes>
+	</mapped-superclass>
+	<mapped-superclass class="net.opentrends.register.model.impl.StudentModelImpl">
+		<attributes>
+			<id name="studentId" />
+			<basic name="groupId" />
+			<basic name="studentName" />
+			<basic name="studentClass" />
+			<basic name="studentEmail" />
+			<basic name="phoneNumber" />
+			<transient name="modelAttributes" />
+			<transient name="primaryKey" />
+			<transient name="primaryKeyObj" />
+		</attributes>
+	</mapped-superclass>
+	<entity class="net.opentrends.register.model.impl.AddressImpl" name="Address">
+		<table name="StudentPortlet_Address" />
+		<attributes />
+	</entity>
+	<entity class="net.opentrends.register.model.impl.StudentImpl" name="Student">
+		<table name="StudentPortlet_Student" />
+		<attributes />
+	</entity>
+</entity-mappings>

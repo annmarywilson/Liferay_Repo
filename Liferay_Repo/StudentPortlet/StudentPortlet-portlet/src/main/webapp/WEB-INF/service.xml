@@ -1,0 +1,34 @@
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
+
+<service-builder package-path="net.opentrends.register">
+	<namespace>StudentPortlet</namespace>
+	<entity name="Student" local-service="true" remote-service="false">
+		<column name="studentId" type="long" primary="true" />
+
+		<column name="groupId" type="long" />
+		<column name="studentName" type="String" />
+		<column name="studentClass" type="String" />
+		<column name="studentEmail" type="String" />
+		<column name="phoneNumber" type="String" />
+
+		<finder return-type="Collection" name="siteId">
+			<finder-column name="groupId" />
+		</finder>
+	</entity>
+
+	<entity name="Address" local-service="true" remote-service="false">
+		<column name="addressId" type="long" primary="true" />
+
+		<column name="studentId" type="long" />
+		<column name="groupId" type="long" />
+		<column name="parentAddress" type="String" />
+		<column name="parentState" type="String" />
+		<column name="parentDistrict" type="String" />
+		<column name="parentPin" type="String" />
+		<column name="parentPhone" type="String" />
+		<column name="parentMail" type="String" />
+		<finder return-type="Collection" name="siteId">
+			<finder-column name="groupId" />
+		</finder>
+	</entity>
+</service-builder>

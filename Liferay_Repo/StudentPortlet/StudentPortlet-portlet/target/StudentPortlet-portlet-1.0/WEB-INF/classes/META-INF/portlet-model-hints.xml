@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="net.opentrends.register.model.Address">
+		<field name="addressId" type="long" />
+		<field name="studentId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="parentAddress" type="String" />
+		<field name="parentState" type="String" />
+		<field name="parentDistrict" type="String" />
+		<field name="parentPin" type="String" />
+		<field name="parentPhone" type="String" />
+		<field name="parentMail" type="String" />
+	</model>
+	<model name="net.opentrends.register.model.Student">
+		<field name="studentId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="studentName" type="String" />
+		<field name="studentClass" type="String" />
+		<field name="studentEmail" type="String" />
+		<field name="phoneNumber" type="String" />
+	</model>
+</model-hints>

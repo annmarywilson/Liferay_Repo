@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" default-destroy-method="destroy" default-init-method="afterPropertiesSet" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	<bean id="net.opentrends.register.service.AddressLocalService" class="net.opentrends.register.service.impl.AddressLocalServiceImpl" />
+	<bean id="net.opentrends.register.service.persistence.AddressPersistence" class="net.opentrends.register.service.persistence.AddressPersistenceImpl" parent="basePersistence" />
+	<bean id="net.opentrends.register.service.StudentLocalService" class="net.opentrends.register.service.impl.StudentLocalServiceImpl" />
+	<bean id="net.opentrends.register.service.persistence.StudentPersistence" class="net.opentrends.register.service.persistence.StudentPersistenceImpl" parent="basePersistence" />
+</beans>
